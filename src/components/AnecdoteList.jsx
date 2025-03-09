@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useDispatch, useSelector } from "react-redux"
-import { addVote } from "../reducers/anecdoteReducer"
+// import { addVote } from "../reducers/anecdoteReducer"
+import { addVote } from '../reducers/store'
 
 const Anecdote = ({ anecdote, handleClick }) => {
 
@@ -20,7 +21,7 @@ const Anecdote = ({ anecdote, handleClick }) => {
 const AnecdoteList = () => {
 
     const anecdotes = useSelector(state => {
-        console.log('AnecdoteList.filter', state.filter)
+        console.log('AnecdoteList.state', state)
         if (state.filter === '') {
             return state.anecdotes
         }
@@ -36,12 +37,14 @@ const AnecdoteList = () => {
         dispatch(addVote(id))
     }
 
-    const sortedAnecdotes = anecdotes.sort((a, b) => b.votes - a.votes)
+    const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes)
+
+    // const sortedAnecdotes = anecdotes.sort((a, b) => b.votes - a.votes)
     console.log('sortedAnecdotes', sortedAnecdotes)
 
     return (
         <div>
-            {anecdotes.map(anecdote =>
+            {sortedAnecdotes.map(anecdote =>
                 <Anecdote key={anecdote.id}
                     anecdote={anecdote}
                     handleClick={() => vote(anecdote.id)} />
