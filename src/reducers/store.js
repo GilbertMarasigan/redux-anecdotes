@@ -1,4 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit";
+import { createNotification, clearNotification } from "./notificationReducer";
 
 const anecdotesAtStart = [
     'If it hurts, do it more often',
@@ -58,3 +59,26 @@ const anecdoteSlice = createSlice({
 
 export const { addAnecdote, addVote } = anecdoteSlice.actions
 export default anecdoteSlice.reducer
+
+
+export const notifyAndDispatch = (actionType, payload) => {
+    return (dispatch, getState) => {
+        if (actionType === "addAnecdote") {
+            dispatch(addAnecdote(payload))
+            dispatch(createNotification(`You added: "${payload}"`))
+        } else if (actionType === "addVote") {
+            dispatch(addVote(payload))
+
+            // Find the anecdote that was voted for
+            const votedAnecdote = getState().anecdotes.find(anecdote => anecdote.id === payload);
+            if (votedAnecdote) {
+                dispatch(createNotification(`You voted: "${votedAnecdote.content}"`))
+            }
+        }
+
+        // Remove notification after 5 seconds
+        setTimeout(() => {
+            dispatch(clearNotification())
+        }, 5000)
+    }
+}

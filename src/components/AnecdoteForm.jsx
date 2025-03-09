@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux"
 // import { addAnecdote } from "../reducers/anecdoteReducer"
-import { addAnecdote } from '../reducers/store'
+import { notifyAndDispatch } from '../reducers/store'
 
 const AnecdoteForm = () => {
 
@@ -10,7 +10,7 @@ const AnecdoteForm = () => {
         event.preventDefault()
         const content = event.target.anecdote.value
         event.target.anecdote.value = ''
-        dispatch(addAnecdote(content))
+        dispatch(notifyAndDispatch("addAnecdote", content))
     }
 
     return (<>
@@ -20,6 +20,7 @@ const AnecdoteForm = () => {
             <button type='submit'>create</button>
         </form>
     </>)
+
 }
 
 

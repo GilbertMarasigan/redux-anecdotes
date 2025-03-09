@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useDispatch, useSelector } from "react-redux"
 // import { addVote } from "../reducers/anecdoteReducer"
-import { addVote } from '../reducers/store'
+import { notifyAndDispatch } from '../reducers/store'
 
 const Anecdote = ({ anecdote, handleClick }) => {
 
@@ -34,7 +34,7 @@ const AnecdoteList = () => {
 
     const vote = (id) => {
         console.log('vote', id)
-        dispatch(addVote(id))
+        dispatch(notifyAndDispatch("addVote", id))
     }
 
     const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes)
