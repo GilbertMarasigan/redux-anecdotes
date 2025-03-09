@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { useDispatch, useSelector } from "react-redux"
 import { addVote } from "../reducers/anecdoteReducer"
 
 const Anecdote = ({ anecdote, handleClick }) => {
-    console.log('anecdote', anecdote)
+
     return (
         <div key={anecdote.id}>
             <div>
@@ -18,7 +19,16 @@ const Anecdote = ({ anecdote, handleClick }) => {
 
 const AnecdoteList = () => {
 
-    const anecdotes = useSelector(state => state)
+    const anecdotes = useSelector(state => {
+        console.log('AnecdoteList.filter', state.filter)
+        if (state.filter === '') {
+            return state.anecdotes
+        }
+        else {
+            return state.anecdotes.filter(anecdote => anecdote.content.includes(state.filter))
+        }
+    })
+
     const dispatch = useDispatch()
 
     const vote = (id) => {
@@ -31,13 +41,11 @@ const AnecdoteList = () => {
 
     return (
         <div>
-            <h2>Anecdotes</h2>
             {anecdotes.map(anecdote =>
                 <Anecdote key={anecdote.id}
                     anecdote={anecdote}
                     handleClick={() => vote(anecdote.id)} />
             )}
-
         </div>
     )
 }
