@@ -1,16 +1,18 @@
 import { useDispatch } from "react-redux"
 // import { addAnecdote } from "../reducers/anecdoteReducer"
 import { notifyAndDispatch } from '../reducers/store'
+import anecdoteService from '../services/anecdotes'
 
 const AnecdoteForm = () => {
 
     const dispatch = useDispatch()
 
-    const newAnecdote = (event) => {
+    const newAnecdote = async (event) => {
         event.preventDefault()
         const content = event.target.anecdote.value
         event.target.anecdote.value = ''
-        dispatch(notifyAndDispatch("addAnecdote", content))
+        const newAnecdote = await anecdoteService.createNew(content)
+        dispatch(notifyAndDispatch("createAnecdote", newAnecdote))
     }
 
     return (<>
