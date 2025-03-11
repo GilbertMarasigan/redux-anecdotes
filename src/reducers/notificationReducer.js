@@ -11,10 +11,19 @@ const notificationSlice = createSlice({
         },
         clearNotification() {
             return ""
-        }
+        },
     }
 })
 
 export const { createNotification, clearNotification } = notificationSlice.actions
+
+export const setNotification = (textToRender, timeInSeconds) => {
+    return async dispatch => {
+        dispatch(createNotification(textToRender))
+        setTimeout(() => {
+            dispatch(clearNotification())
+        }, timeInSeconds * 1000)
+    }
+}
 
 export default notificationSlice.reducer

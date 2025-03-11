@@ -1,5 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit";
-import { createNotification, clearNotification } from "./notificationReducer";
+import { setNotification } from "./notificationReducer";
+import anecdoteService from '../services/anecdotes'
 
 // const anecdotesAtStart = [
 //     'If it hurts, do it more often',
@@ -57,34 +58,44 @@ const anecdoteSlice = createSlice({
         setAnecdotes(state, action) {
             return action.payload
         },
-        createAnecdote(state, action) {
+        appendAnecdote(state, action) {
             state.push(action.payload)
         }
     }
 })
 
-export const { addAnecdote, addVote, setAnecdotes, createAnecdote } = anecdoteSlice.actions
-export default anecdoteSlice.reducer
+export const { addAnecdote, addVote, setAnecdotes, appendAnecdote } = anecdoteSlice.actions
 
-
-export const notifyAndDispatch = (actionType, payload) => {
-    return (dispatch, getState) => {
-        if (actionType === "createAnecdote") {
-            dispatch(createAnecdote(payload))
-            dispatch(createNotification(`You added: "${payload.content}"`))
-        } else if (actionType === "addVote") {
-            dispatch(addVote(payload))
-
-            // Find the anecdote that was voted for
-            const votedAnecdote = getState().anecdotes.find(anecdote => anecdote.id === payload);
-            if (votedAnecdote) {
-                dispatch(createNotification(`You voted: "${votedAnecdote.content}"`))
-            }
-        }
-
-        // Remove notification after 5 seconds
-        setTimeout(() => {
-            dispatch(clearNotification())
-        }, 5000)
+export const initializeAnecdotes = () => {
+    return async dispatch => {
+        const anecdotes = await anecdoteService.getAll()
+        dispatch(setAnecdotes(anecdotes))
     }
 }
+
+export const createAnecdote = content => {
+    return async dispatch => {
+        const newAnecdote = await anecdoteService.createNew(content)
+        dispatch(appendAnecdote(newAnecdote))
+        dispatch(setNotification(`You added: "${newAnecdote.content}"`, 10))
+    }
+}
+
+export const saveVote = (id) => {
+    return async (dispatch, getState) => {
+        const currentAnecdote = getState().anecdotes.find(a => a.id === id)
+
+        if (!currentAnecdote) {
+            console.error("Anecdote not found")
+            return
+        }
+
+        const updatedAnecdote = { ...currentAnecdote, votes: currentAnecdote.votes + 1 }
+        const response = await anecdoteService.updateVotes(updatedAnecdote)
+
+        dispatch(addVote(response.id))
+        dispatch(setNotification(`You voted: "${response.content}"`, 10))
+    }
+}
+
+export default anecdoteSlice.reducer
